@@ -1,34 +1,32 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
+import { useFetchGifs } from '../hooks/useFetchGifs'
+// import { getGifs } from '../helpers/getGifs';
+import { GifGridItem } from './GifGridItem';
 
 export const GifGrid = ({category}) => {
 
-    const [count, setCount] = useState(0);
+    // const [images, seImages] = useState([])
+    const { data:images, loading } = useFetchGifs( category );
 
-    useEffect(()=> {
-        getGifs();
-    },[])
 
-    const getGifs = async() => {
-        const url = 'https://api.giphy.com/v1/gifs/search?q=rick+and+morty&limit=10&api_key=STKCAKv9F6bk1VlVaNlOPL7sJtVyAEmC';
 
-        const resp = await fetch(url);
-        const {data} = await resp.json();
-
-        const gifs = data.map(img => {
-            return{ 
-                id: img.id,
-                title: img.title,
-                url: img.images?.downsized_medium.url,
-            };
-        })
-        console.log(gifs);
-    }
-
+    // encodeURI reemplaza espacios formato url
     return (
-        <div>
-            <h3>{category}</h3>
-            <h3>{count}</h3>
-            <button onClick={()=> setCount( count + 1)}>add</button>
+        <>
+        <h3 className='animate__animated animate__fadeInLeft'>{category}</h3>
+        { loading && <p className='animate__animated animate__flash'>Loading...</p>}
+        <div className='card-grid'>
+                {
+                    images.map(( img ) =>(
+                        <GifGridItem 
+                            key={ img.id } 
+                            { ...img }
+                        />
+                    ))
+                }
+   
         </div>
+        </>
+        
     )
 }
